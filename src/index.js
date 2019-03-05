@@ -260,5 +260,172 @@
     });
   };
 
+  /**
+   * -----------------------------------------------------------
+   * core methods
+   * 定义在原型上，操作zdom对象的核心方法
+   * -----------------------------------------------------------
+   */
+
+  /**
+   * 判断zdom对象是否是对应节点或者满足匹配
+   * @method is
+   * @param selectorOrNode {String|Ojbect} 
+   * @returns {Boolean}
+   */
+
+   zdom.fn.is = function(selectorOrNode) {
+    let check = true;
+    this.each(function(index, value) {
+      if(selectorOrNode.nodeValue) {
+        if(value === selectorOrNode) {
+          check = false;
+          return
+        }
+      } else {
+        if(!zdom.matchesSelector(value, selectorOrNode)) {
+          check = false;
+          return
+        }
+      }
+    });
+    return check;
+   }
+
+  /**
+   * 判断zdom对象是否为空
+   * @method isEmpty
+   * @param {String|Ojbect} 选择器或者元素节点
+   * @returns {Boolean}
+   */
+  zdom.fn.isEmpty = function(){
+    let check = true;
+    this.each(function(index, value) {
+      if(this.innerHTML.trim() !== '') {
+        check = false;
+        return
+      }
+    });
+    return check;
+  };
+
+  /**
+   * 返回查找元素的index, 查找到的第一个
+   * @method index
+   * @param {String|Ojbect} 选择器或者元素节点
+   * @returns {Number}
+   */
+  zdom.fn.index = function(selectorOrNode) {
+    let index = -1;
+    this.each(function(i, value) {
+      if (typeof selectorOrNode === 'string') {
+        if(zdom.matchesSelector(value, selectorOrNode)) {
+          index = i;
+          return false;
+        }
+      } else {
+        if(this === selectorOrNode) {
+          index = i;
+          return false;
+        }
+      }
+    });
+    return index;
+  }
+
+  /**
+   * 返回查找元素的index, 查找到的最后一个
+   * @method lastIndex
+   * @param {String|Ojbect} 选择器或者元素节点
+   * @returns {Number}
+   */
+  zdom.fn.lastIndex = function(selectorOrNode) {
+    let fromStart = this.reverse().index(selectorOrNode);
+    if (fromStart === -1) {
+      return -1;
+    } else {
+      return (this.length - 1) - fromStart;
+    }
+  }
+
+  /**
+   * 查找当前节点之前兄弟节点数量
+   * @method previousSiblingNum
+   * @returns {Number}
+   */
+  zdom.fn.previousSiblingNum = function() {
+    if(this[0] === undefined) return -1;
+    let index = 0;
+    let element = this[0];
+    while(element && (element = element.perviousElementSibling)) {
+      index++;
+    }
+    return index;
+  }
+
+  /**
+   * 查找是否拥有该节点
+   * @method has
+   * @param {String|Node}
+   * @returns {Boolean}
+   */
+  zdom.fn.has = function(selectorOrNode) {
+    let check = false;
+    this.each(function(index, value) {
+      if(typeof selectorOrNode === 'string' ? this.parentNode.querySelectorAll(selectorOrNode).length === 1 : this.parentNode.contains(selectorOrNode)) {
+        check = true;
+        return false;
+      }
+    });
+    return check;
+  }
+
+  /**
+   * 返回数组长度
+   * @method total
+   * @returns {Number}
+   */
+  zdom.fn.total = function() {
+    return this.length;
+  }
+
+  /**
+   * 将zdom转换成数组
+   * @method toArray
+   * @returns {Array}
+   */
+  zdom.fn.toArrAy = function() {
+    return [].slice.call(this);
+  }
+
+  /**
+   * 根据索引返回元素
+   * @method get
+   * @param {Number}
+   * @return {Node}
+   */
+  zdom.fn.get = function(index) {
+    return index === undefined ? this[0] : this[index];
+  }
+
+  // 下面这些方法会返回zdom对象，所以可以链式调用
+
+  /**
+   * 翻转zdom
+   * @method reverse
+   * @returns {Object}
+   */
+  zdom.fn.reverse = function() {
+    return zdom(this.toArrAy().reverse());
+  }
+
+  /**
+   * @method each
+   * @return {Ojbect}
+   */
+  zdom.fn.each = function(callback) {
+    return zdom.each(this, callback);
+  }
   
+
 })(window);
